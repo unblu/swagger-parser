@@ -133,7 +133,10 @@ public class OpenAPIV3Parser implements SwaggerParserExtension {
         }
         catch (Exception e) {
             SwaggerParseResult output = new SwaggerParseResult();
-            output.setMessages(Arrays.asList("unable to read location `" + location + "`"));
+//            output.setMessages(Arrays.asList("unable to read location `" + location + "`"));
+            output.setMessages(Arrays.asList(e.getMessage()));
+            System.out.print("uh oh: ");
+            e.printStackTrace();
             return output;
         }
     }

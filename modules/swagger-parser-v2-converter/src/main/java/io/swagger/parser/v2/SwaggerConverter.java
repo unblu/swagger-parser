@@ -43,6 +43,8 @@ public class SwaggerConverter implements SwaggerParserExtension {
             resolve = options.isResolve();
         }
 
+        //SwaggerDeserializationResult result = new io.swagger.parser.SwaggerParser().readWithInfo(url, convert(auths), resolve);
+
         SwaggerDeserializationResult result = new io.swagger.parser.SwaggerParser().readWithInfo(url, convert(auths), resolve);
 
         return convert(result);

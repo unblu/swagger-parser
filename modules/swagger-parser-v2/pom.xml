@@ -30,12 +30,12 @@
                                     <include>io.swagger:*</include>
                                 </includes>
                             </artifactSet>
-                            <relocations>
+                            <!-- <relocations>
                                 <relocation>
                                     <pattern>io.swagger</pattern>
                                     <shadedPattern>v2.io.swagger</shadedPattern>
                                 </relocation>
-                            </relocations>
+                            </relocations> -->
                             <createSourcesJar>true</createSourcesJar>
                             <shadeSourcesContent>true</shadeSourcesContent>
                         </configuration>
