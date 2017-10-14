@@ -10,6 +10,7 @@ import io.swagger.parser.models.AuthorizationValue;
 import io.swagger.parser.models.ParseOptions;
 import io.swagger.parser.models.SwaggerParseResult;
 import io.swagger.parser.v3.OpenAPIV3Parser;
+import io.swagger.util.Json;
 import mockit.Injectable;
 import org.apache.commons.io.FileUtils;
 
@@ -267,6 +268,48 @@ public class OpenAPIV3ParserTest {
         assertNotNull(userAddress);
         assertNotNull(userAddress.getProperties().get("city"));
         assertNotNull(userAddress.getProperties().get("street"));
+    }
+
+    @Test
+    public void testEmptySchemasInComponents(@Injectable List<AuthorizationValue> auths){
+        String yaml = "openapi: 3.0.0\n" +
+                "servers:\n" +
+                "  - url: 'http://abc:5555/mypath'\n" +
+                "info:\n" +
+                "  version: '1.0'\n" +
+                "  title: dd\n" +
+                "paths:\n" +
+                "  /resource1/Id:\n" +
+                "    post:\n" +
+                "      description: ''\n" +
+                "      operationId: postOp\n" +
+                "      responses:\n" +
+                "        '200':\n" +
+                "          description: Successful\n" +
+                "        '401':\n" +
+                "          description: Access Denied\n" +
+                "      requestBody:\n" +
+                "        content:\n" +
+                "          application/json:\n" +
+                "            schema:\n" +
+                "              $ref: '#/components/schemas/mydefinition'\n" +
+                "        required: true\n" +
+                "components:\n" +
+                "  schemas:\n" +
+                "    mydefinition: {}";
+
+        ParseOptions options = new ParseOptions();
+        options.setResolve(true);
+
+        SwaggerParseResult result = new OpenAPIV3Parser().readContents(yaml, auths, options  );
+
+        System.out.println(Json.pretty(result.getOpenAPI()));
+
+        assertNotNull(result);
+        assertTrue(result.getOpenAPI().getComponents().getSchemas() != null);
+
+
+
     }
 
 
