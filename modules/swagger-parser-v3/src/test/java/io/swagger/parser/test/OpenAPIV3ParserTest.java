@@ -306,7 +306,7 @@ public class OpenAPIV3ParserTest {
         System.out.println(Json.pretty(result.getOpenAPI()));
 
         assertNotNull(result);
-        assertTrue(result.getOpenAPI().getComponents().getSchemas() != null);
+        assertTrue(result.getOpenAPI().getComponents().getSchemas().get("mydefinition") != null);
 
 
 
