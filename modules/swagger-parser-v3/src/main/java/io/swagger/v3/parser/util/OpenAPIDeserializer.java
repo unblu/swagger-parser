@@ -17,6 +17,7 @@ import io.swagger.v3.oas.models.links.Link;
 import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.media.ArraySchema;
+import io.swagger.v3.oas.models.media.BooleanSchema;
 import io.swagger.v3.oas.models.media.ComposedSchema;
 import io.swagger.v3.oas.models.media.Content;
 import io.swagger.v3.oas.models.media.Discriminator;
@@ -1740,14 +1741,14 @@ public class OpenAPIDeserializer {
         Set<String> schemaKeys = getKeys(obj);
         for (String schemaName : schemaKeys) {
             JsonNode schemaValue = obj.get(schemaName);
-                if (!schemaValue.getNodeType().equals(JsonNodeType.OBJECT)) {
-                    result.invalidType(location, schemaName, "object", schemaValue);
-                } else {
+                if (schemaValue.getNodeType().equals(JsonNodeType.OBJECT)){
                     ObjectNode schema = (ObjectNode) schemaValue;
                     Schema schemaObj = getSchema(schema, String.format("%s.%s'", location, schemaName), result);
                     if(schemaObj != null) {
                         schemas.put(schemaName, schemaObj);
                     }
+                } else {
+                    result.invalidType(location, schemaName, "object", schemaValue);
                 }
         }
 
@@ -1983,13 +1984,28 @@ public class OpenAPIDeserializer {
             schema.setProperties(properties);
         }
 
-        ObjectNode additionalPropertiesObj = getObject("additionalProperties", node, false, location, result);
-        if(additionalPropertiesObj != null) {
-            Schema additionalProperties = getSchema(additionalPropertiesObj, location, result);
-            if(additionalProperties != null) {
-                schema.setAdditionalProperties(additionalProperties);
+
+
+        if (node.getNodeType().equals(JsonNodeType.OBJECT)){
+            ObjectNode additionalPropertiesObj = getObject("additionalProperties", node, false, location, result);
+            if (additionalPropertiesObj != null) {
+                Schema additionalProperties = getSchema(additionalPropertiesObj, location, result);
+                if (additionalProperties != null) {
+                    schema.setAdditionalProperties(additionalProperties);
+                }
+            }else {
+                value = getString("additionalProperties", node, false, location, result);
+                BooleanSchema booleanSchema = new BooleanSchema();
+                List values = new ArrayList();
+                values.add(value);
+                booleanSchema.setEnum(values);
+                if (StringUtils.isNotBlank(value)) {
+                    schema.setAdditionalProperties(booleanSchema);
+                }
             }
         }
+
+
         value = getString("description",node,false,location,result);
         if (StringUtils.isNotBlank(value)) {
             schema.setDescription(value);
